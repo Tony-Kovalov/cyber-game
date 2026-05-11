@@ -1,350 +1,346 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cyber Architect: Ultra Edition</title>
-    <style>
-        :root {
-            --neon: #00f2ff;
-            --energy: #7000ff;
-            --danger: #ff007b;
-            --bg: #020617;
-            --surface: rgba(15, 23, 42, 0.8);
-            --text: #e2e8f0;
-            --line-height: 1.8;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Cyber Architect: Ultra Edition</title>
+  <style>
+    :root {
+      --neon: #00f2ff;
+      --energy: #7000ff;
+      --danger: #ff007b;
+      --bg: #020617;
+      --surface: rgba(15, 23, 42, 0.8);
+      --text: #e2e8f0;
+      --line-height: 1.8;
+    }
 
-        body {
-            background-color: var(--bg);
-            background-image:
-                radial-gradient(at 0% 0%, rgba(112, 0, 255, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(0, 242, 255, 0.1) 0px, transparent 50%);
-            color: var(--text);
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            line-height: var(--line-height);
-        }
+    body {
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(at 0% 0%, rgba(112, 0, 255, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(0, 242, 255, 0.1) 0px, transparent 50%);
+      color: var(--text);
+      font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      line-height: var(--line-height);
+    }
 
-        #app {
-            width: 100%;
-            max-width: 550px;
-            padding: 25px;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+    #app {
+      width: 100%;
+      max-width: 550px;
+      padding: 25px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
 
-        .hud {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-family: 'Courier New', monospace;
-            color: var(--neon);
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            background: rgba(0, 242, 255, 0.05);
-            padding: 10px 14px;
-            border-radius: 50px;
-            border: 1px solid rgba(0, 242, 255, 0.1);
-            gap: 10px;
-        }
+    .hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: "Courier New", monospace;
+      color: var(--neon);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      background: rgba(0, 242, 255, 0.05);
+      padding: 10px 14px;
+      border-radius: 50px;
+      border: 1px solid rgba(0, 242, 255, 0.1);
+      gap: 10px;
+    }
 
-        .hud-left {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
+    .hud-left {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
 
-        .music-btn {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(0, 242, 255, 0.25);
-            color: var(--neon);
-            border-radius: 999px;
-            padding: 7px 12px;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            cursor: pointer;
-            white-space: nowrap;
-        }
+    .music-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(0, 242, 255, 0.25);
+      color: var(--neon);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      white-space: nowrap;
+    }
 
-        .music-btn:hover {
-            background: rgba(0, 242, 255, 0.12);
-        }
+    .music-btn:hover {
+      background: rgba(0, 242, 255, 0.12);
+    }
 
-        .shield-container {
-            height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
+    .shield-container {
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
 
-        .shield-layer {
-            position: absolute;
-            border-radius: 50%;
-            border: 2px solid transparent;
-            transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1);
-            opacity: 0.05;
-            transform: scale(0.5);
-        }
+    .shield-layer {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+      opacity: 0.05;
+      transform: scale(0.5);
+    }
 
-        .layer-active {
-            opacity: 1;
-            transform: scale(1);
-            border-color: var(--neon);
-            box-shadow: 0 0 40px rgba(0, 242, 255, 0.2);
-        }
+    .layer-active {
+      opacity: 1;
+      transform: scale(1);
+      border-color: var(--neon);
+      box-shadow: 0 0 40px rgba(0, 242, 255, 0.2);
+    }
 
-        .core {
-            width: 70px;
-            height: 70px;
-            background: var(--surface);
-            border: 2px solid var(--energy);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-            z-index: 5;
-            box-shadow: 0 0 20px var(--energy);
-        }
+    .core {
+      width: 70px;
+      height: 70px;
+      background: var(--surface);
+      border: 2px solid var(--energy);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      z-index: 5;
+      box-shadow: 0 0 20px var(--energy);
+    }
 
-        .card {
-            background: var(--surface);
-            border-radius: 35px;
-            padding: 35px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(15px);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            display: flex;
-            flex-direction: column;
-            animation: fadeIn 0.5s ease;
-        }
+    .card {
+      background: var(--surface);
+      border-radius: 35px;
+      padding: 35px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(15px);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      animation: fadeIn 0.5s ease;
+    }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-        h2 {
-            font-size: 26px;
-            margin: 0 0 20px 0;
-            color: var(--neon);
-            line-height: 1.2;
-            font-weight: 800;
-        }
+    h2 {
+      font-size: 26px;
+      margin: 0 0 20px 0;
+      color: var(--neon);
+      line-height: 1.2;
+      font-weight: 800;
+    }
 
-        .theory-text {
-            font-size: 16px;
-            color: #cbd5e1;
-            margin-bottom: 25px;
-        }
+    .theory-text {
+      font-size: 16px;
+      color: #cbd5e1;
+      margin-bottom: 25px;
+    }
 
-        .theory-text b { color: #fff; border-bottom: 1px solid var(--energy); }
+    .theory-text b {
+      color: #fff;
+      border-bottom: 1px solid var(--energy);
+    }
 
-        .q-image-wrap {
-            margin: 0 0 16px 0;
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.12);
-            background: rgba(255,255,255,0.04);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px;
-        }
+    .q-image-wrap {
+      margin: 0 0 16px 0;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+    }
 
-        .q-image {
-            width: 100%;
-            height: auto;
-            max-height: 260px;
-            object-fit: contain;
-            display: block;
-        }
+    .q-image {
+      width: 100%;
+      height: auto;
+      max-height: 260px;
+      object-fit: contain;
+      display: block;
+    }
 
-        .opt-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
+    .opt-list { display: flex; flex-direction: column; gap: 15px; }
 
-        .opt-btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #f1f5f9;
-            padding: 20px;
-            border-radius: 20px;
-            text-align: left;
-            font-size: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-            line-height: 1.4;
-        }
+    .opt-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #f1f5f9;
+      padding: 20px;
+      border-radius: 20px;
+      text-align: left;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+      line-height: 1.4;
+    }
 
-        .opt-btn:hover {
-            background: rgba(112, 0, 255, 0.1);
-            border-color: var(--energy);
-            transform: translateX(5px);
-        }
+    .opt-btn:hover {
+      background: rgba(112, 0, 255, 0.1);
+      border-color: var(--energy);
+      transform: translateX(5px);
+    }
 
-        #fb {
-            padding: 25px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            border-left: 6px solid;
-            line-height: 1.6;
-        }
+    #fb {
+      padding: 25px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      border-left: 6px solid;
+      line-height: 1.6;
+    }
 
-        .correct { background: rgba(34, 197, 94, 0.1); border-color: #22c55e; color: #86efac; }
-        .wrong { background: rgba(244, 63, 94, 0.1); border-color: #f43f5e; color: #fda4af; }
+    .correct { background: rgba(34, 197, 94, 0.1); border-color: #22c55e; color: #86efac; }
+    .wrong { background: rgba(244, 63, 94, 0.1); border-color: #f43f5e; color: #fda4af; }
 
-        .action-btn {
-            background: linear-gradient(135deg, var(--energy), var(--neon));
-            color: white;
-            border: none;
-            padding: 22px;
-            border-radius: 20px;
-            font-weight: 900;
-            font-size: 16px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            cursor: pointer;
-            margin-top: 20px;
-            box-shadow: 0 10px 20px rgba(112, 0, 255, 0.3);
-        }
+    .action-btn {
+      background: linear-gradient(135deg, var(--energy), var(--neon));
+      color: white;
+      border: none;
+      padding: 22px;
+      border-radius: 20px;
+      font-weight: 900;
+      font-size: 16px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      cursor: pointer;
+      margin-top: 20px;
+      box-shadow: 0 10px 20px rgba(112, 0, 255, 0.3);
+    }
 
-        .action-btn:active { transform: scale(0.98); }
+    .action-btn:active { transform: scale(0.98); }
 
-        .finish-badge {
-            display: inline-block;
-            background: rgba(0, 242, 255, 0.13);
-            border: 1px solid rgba(0, 242, 255, 0.35);
-            color: var(--neon);
-            border-radius: 999px;
-            padding: 7px 14px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            font-size: 12px;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-        }
+    .finish-badge {
+      display: inline-block;
+      background: rgba(0, 242, 255, 0.13);
+      border: 1px solid rgba(0, 242, 255, 0.35);
+      color: var(--neon);
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      font-size: 12px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
 
-        .confetti {
-            position: fixed;
-            top: -12px;
-            width: 10px;
-            height: 14px;
-            opacity: 0.95;
-            z-index: 9999;
-            pointer-events: none;
-            animation: confettiFall linear forwards;
-        }
+    .confetti {
+      position: fixed;
+      top: -12px;
+      width: 10px;
+      height: 14px;
+      opacity: 0.95;
+      z-index: 9999;
+      pointer-events: none;
+      animation: confettiFall linear forwards;
+    }
 
-        @keyframes confettiFall {
-            to {
-                transform: translateY(110vh) rotate(720deg);
-                opacity: 1;
-            }
-        }
-    </style>
+    @keyframes confettiFall {
+      to {
+        transform: translateY(110vh) rotate(720deg);
+        opacity: 1;
+      }
+    }
+  </style>
 </head>
 <body>
-
-<div id="app">
+  <div id="app">
     <div class="hud">
-        <div class="hud-left">
-            <span>Рівень: <span id="lvl">1</span>/12</span>
-            <span>Захист: <span id="perc">0</span>%</span>
-        </div>
-        <button id="music-toggle" class="music-btn">🔊 Музика: ON</button>
+      <div class="hud-left">
+        <span>Рівень: <span id="lvl">1</span>/12</span>
+        <span>Захист: <span id="perc">0</span>%</span>
+      </div>
+      <button id="music-toggle" class="music-btn">🔊 Музика: ON</button>
     </div>
 
     <div class="shield-container">
-        <div id="l3" class="shield-layer" style="width: 190px; height: 190px; border-width: 4px; border-style: double;"></div>
-        <div id="l2" class="shield-layer" style="width: 150px; height: 150px; border-style: dashed;"></div>
-        <div id="l1" class="shield-layer" style="width: 110px; height: 110px;"></div>
-        <div class="core" id="core-node">🛡️</div>
+      <div id="l3" class="shield-layer" style="width: 190px; height: 190px; border-width: 4px; border-style: double;"></div>
+      <div id="l2" class="shield-layer" style="width: 150px; height: 150px; border-style: dashed;"></div>
+      <div id="l1" class="shield-layer" style="width: 110px; height: 110px;"></div>
+      <div class="core" id="core-node">🛡️</div>
     </div>
 
     <div class="card" id="main-content">
-        <div id="view"></div>
+      <div id="view"></div>
     </div>
-</div>
+  </div>
 
-<!-- Фонова музика (твоя) -->
-<audio id="bgm" loop playsinline preload="auto">
-  <source src="the_mountain-control-system-142290.mp3" type="audio/mpeg" />
-</audio>
+  <!-- Фонова музика -->
+  <audio id="bgm" loop playsinline preload="auto">
+    <source src="the_mountain-control-system-142290.mp3" type="audio/mpeg" />
+  </audio>
 
-<!-- SFX -->
-<audio id="sfx-correct" playsinline preload="auto">
-  <source src="sfx-correct.mp3" type="audio/mpeg" />
-</audio>
+  <!-- SFX -->
+  <audio id="sfx-correct" playsinline preload="auto">
+    <source src="sfx-correct.mp3" type="audio/mpeg" />
+  </audio>
+  <audio id="sfx-wrong" playsinline preload="auto">
+    <source src="sfx-wrong.mp3" type="audio/mpeg" />
+  </audio>
+  <audio id="sfx-confetti" playsinline preload="auto">
+    <source src="sfx-confetti.mp3" type="audio/mpeg" />
+  </audio>
 
-<audio id="sfx-wrong" playsinline preload="auto">
-  <source src="sfx-wrong.mp3" type="audio/mpeg" />
-</audio>
-
-<audio id="sfx-confetti" playsinline preload="auto">
-  <source src="sfx-confetti.mp3" type="audio/mpeg" />
-</audio>
-
-<script>
+  <script>
     let step = 0;
     let score = 0;
-    let state = 'theory';
+    let state = "theory";
 
-    // ===== MP3 AUDIO =====
-    const bgm = document.getElementById('bgm');
-    const sfxCorrect = document.getElementById('sfx-correct');
-    const sfxWrong = document.getElementById('sfx-wrong');
-    const sfxConfetti = document.getElementById('sfx-confetti');
+    const bgm = document.getElementById("bgm");
+    const sfxCorrect = document.getElementById("sfx-correct");
+    const sfxWrong = document.getElementById("sfx-wrong");
+    const sfxConfetti = document.getElementById("sfx-confetti");
+
     let musicOn = true;
 
     function setMusicButtonLabel() {
-        const btn = document.getElementById('music-toggle');
-        if (!btn) return;
-        btn.innerText = musicOn ? '🔊 Музика: ON' : '🔇 Музика: OFF';
+      const btn = document.getElementById("music-toggle");
+      if (!btn) return;
+      btn.innerText = musicOn ? "🔊 Музика: ON" : "🔇 Музика: OFF";
     }
 
     async function startMusic() {
-        if (!musicOn || !bgm) return;
-        try {
-            bgm.muted = false;
-            bgm.volume = 0.55;
-            await bgm.play();
-        } catch (_) {}
+      if (!musicOn || !bgm) return;
+      try {
+        bgm.muted = false;
+        bgm.volume = 0.55;
+        await bgm.play();
+      } catch (_) {}
     }
 
     function stopMusic() {
-        if (!bgm) return;
-        bgm.pause();
+      if (!bgm) return;
+      bgm.pause();
     }
 
     function toggleMusic() {
-        musicOn = !musicOn;
-        setMusicButtonLabel();
-        if (musicOn) startMusic();
-        else stopMusic();
+      musicOn = !musicOn;
+      setMusicButtonLabel();
+      if (musicOn) startMusic();
+      else stopMusic();
     }
 
     function playSfx(audioEl, volume = 0.95) {
-        if (!audioEl) return;
-        try {
-            audioEl.pause();
-            audioEl.currentTime = 0;
-            audioEl.volume = volume;
-            audioEl.play().catch(() => {});
-        } catch (_) {}
+      if (!audioEl) return;
+      try {
+        audioEl.pause();
+        audioEl.currentTime = 0;
+        audioEl.volume = volume;
+        audioEl.play().catch(() => {});
+      } catch (_) {}
     }
 
     function playCorrectSfx() { playSfx(sfxCorrect, 0.95); }
@@ -352,337 +348,333 @@
     function playConfettiSfx() { playSfx(sfxConfetti, 0.95); }
 
     function initMusicAutostart() {
-        setMusicButtonLabel();
+      setMusicButtonLabel();
+      startMusic();
 
-        // Спроба одразу (де дозволено)
-        startMusic();
+      const unlock = async () => {
+        await startMusic();
+        document.removeEventListener("touchstart", unlock);
+        document.removeEventListener("pointerdown", unlock);
+        document.removeEventListener("click", unlock);
+        document.removeEventListener("keydown", unlock);
+      };
 
-        // Гарантований запуск після першого торкання на iPhone/WebView
-        const unlock = async () => {
-            await startMusic();
-            document.removeEventListener('touchstart', unlock);
-            document.removeEventListener('pointerdown', unlock);
-            document.removeEventListener('click', unlock);
-            document.removeEventListener('keydown', unlock);
-        };
+      document.addEventListener("touchstart", unlock, { once: true, passive: true });
+      document.addEventListener("pointerdown", unlock, { once: true });
+      document.addEventListener("click", unlock, { once: true });
+      document.addEventListener("keydown", unlock, { once: true });
 
-        document.addEventListener('touchstart', unlock, { once: true, passive: true });
-        document.addEventListener('pointerdown', unlock, { once: true });
-        document.addEventListener('click', unlock, { once: true });
-        document.addEventListener('keydown', unlock, { once: true });
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) stopMusic();
+        else if (musicOn) startMusic();
+      });
 
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) stopMusic();
-            else if (musicOn) startMusic();
-        });
-
-        window.addEventListener('pagehide', stopMusic);
-        window.addEventListener('beforeunload', stopMusic);
-        window.addEventListener('blur', stopMusic);
-        window.addEventListener('pageshow', () => {
-            if (!document.hidden && musicOn) startMusic();
-        });
+      window.addEventListener("pagehide", stopMusic);
+      window.addEventListener("beforeunload", stopMusic);
+      window.addEventListener("blur", stopMusic);
+      window.addEventListener("pageshow", () => {
+        if (!document.hidden && musicOn) startMusic();
+      });
     }
 
     function launchConfetti() {
-        const colors = ['#00f2ff', '#7000ff', '#ff007b', '#22c55e', '#facc15', '#ffffff'];
-        const count = 140;
+      const colors = ["#00f2ff", "#7000ff", "#ff007b", "#22c55e", "#facc15", "#ffffff"];
+      const count = 140;
 
-        for (let i = 0; i < count; i++) {
-            const el = document.createElement('div');
-            el.className = 'confetti';
-            el.style.left = Math.random() * 100 + 'vw';
-            el.style.background = colors[Math.floor(Math.random() * colors.length)];
-            el.style.transform = `translateY(0) rotate(${Math.random() * 360}deg)`;
-            el.style.animationDuration = (2.2 + Math.random() * 1.8) + 's';
-            el.style.animationDelay = (Math.random() * 0.4) + 's';
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 4500);
-        }
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement("div");
+        el.className = "confetti";
+        el.style.left = Math.random() * 100 + "vw";
+        el.style.background = colors[Math.floor(Math.random() * colors.length)];
+        el.style.transform = `translateY(0) rotate(${Math.random() * 360}deg)`;
+        el.style.animationDuration = (2.2 + Math.random() * 1.8) + "s";
+        el.style.animationDelay = (Math.random() * 0.4) + "s";
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 4500);
+      }
     }
 
     const db = [
-        {
-            t: "Математика Пароля",
-            img: "q1.jpg",
-            info: "Надійність пароля залежить від того, скільки різних варіантів потрібно перебрати, щоб його вгадати: чим довший пароль, тим більше варіантів і тим важче його зламати. Додавати різні символи корисно, але саме довжина дає найбільший захист. Наприклад, <strong>“12345”</strong> має лише 100 000 варіантів і ламається миттєво. Фраза <strong>“GreenCoffeeRunsAtNight”</strong> (~24 символи) має ≈10<sup>41</sup> комбінацій: навіть при 10<sup>12</sup> спроб/с повний перебір зайняв би близько <strong>10<sup>21</sup> років</strong>.",
-            q: "Який пароль є найбільш надійним?",
-            opts: [
-                { text: "Взяти своє ім'я та додати рік народження і знак '!'", p: 0, f: "Це перше, що перевірить програма хакера. Дуже слабкий захист." },
-                { text: "Використати 4-5 випадкових українських слів через дефіс", p: 9, f: "Блискуче! Це називається методом фраз-паролів. Довжина б’є будь-який перебір." },
-                { text: "Записати англійське слово, замінивши 's' на '$' і 'o' на '0'", p: 3, f: "Це стара техніка. Сучасні словники хакерів вже містять усі такі заміни." }
-            ]
-        },
-        {
-            t: "Привиди в Мережі",
-            img: "q2-wifi-cafe.jpg",
-            info: "Коли ти підключаєшся до відкритого Wi-Fi, твій телефон починає 'кричати' дані в повітря. <br><br>Зловмисник може провести атаку <b>Evil Twin</b>: створити мережу з такою ж назвою, як у кафе. Весь твій трафік пройде через його ноутбук, і він побачить твої сесії в соцмережах.",
-            q: "Як захиститися, якщо терміново потрібен інтернет у публічному місці?",
-            opts: [
-                { text: "Роздати інтернет з власного смартфона (Мобільний хот-спот)", p: 9, f: "Мобільний інтернет зазвичай безпечніший, бо трафік зашифрований і прив’язаний до SIM-карти, тому його складніше перехопити. Публічний Wi-Fi часто відкритий або слабо захищений, і через нього зловмисники можуть перехоплювати дані або створювати підробні точки доступу." },
-                { text: "Підключитися до Wi-Fi, але не вводити номер телефону", p: 2, f: "Це не допоможе. Дані все одно летять через чужий роутер у відкритому вигляді." },
-                { text: "Використовувати Wi-Fi тільки для перегляду новин, не заходячи в акаунти", p: 5, f: "Це компроміс. Але пам'ятайте: телефон може оновлювати пошту у фоні!" }
-            ]
-        },
-        {
-            t: "Метадані: Сліди, які ми не бачимо",
-            img: "q3-exif-geo.png",
-            info: "Кожне фото, зроблене на смартфон, може містити приховані дані — так звані EXIF-метадані. У них іноді зберігається не лише модель телефону і час зйомки, а й GPS-координати місця, де було зроблено фото, якщо ця функція увімкнена. <br><br> Це означає, що звичайне селфі потенційно може показати, де ти був у момент зйомки. Саме тому важливо розуміти, що публікуючи фото, ти інколи розповідаєш більше інформації, ніж здається на перший погляд.",
-            q: "Яка головна небезпека публікації оригінальних фото у соцмережах?",
-            opts: [
-                { text: "Фото можуть використати для створення мемів", p: 1, f: "Це неприємно, але не є критичною загрозою безпеці життя." },
-                { text: "Погіршується якість зображення при завантаженні", p: 0, f: "Це технічне питання, яке не стосується кібербезпеки." },
-                { text: "Злочинці можуть дізнатися місце проживання через геотеги", p: 9, f: "Саме так. Завжди перевіряй налаштування приватності камери." }
-            ]
-        },
-        {
-            t: "Мистецтво Фішингу",
-            img: "q4-phishing-mail.png",
-            info: "Хакери — чудові психологи. Вони шлють листи, що викликають паніку: <b>'Ваш акаунт зламано! Натисніть ТУТ для захисту'</b>. <br><br>Посилання веде на копію сайту. Як тільки ти вводиш пароль, він опиняється в базі хакера. Це називається соціальною інженерією.",
-            q: "Тобі прийшов лист від 'Адміністрації' з проханням терміново оновити дані. Що перевіриш?",
-            opts: [
-                { text: "Реальну адресу відправника та доменне ім’я сайту", p: 9, f: "Правильно! Офіційні листи ніколи не приходять з адрес на кшталт @gmail.com або @support-security.xyz." },
-                { text: "Чи є в листі офіційний логотип компанії", p: 0, f: "Логотип копіюється за одну секунду. Це не показник безпеки." },
-                { text: "Чи ввічливо до мене звертаються в листі", p: 1, f: "Шахраї бувають дуже ввічливими, щоб приспати твою пильність." }
-            ]
-        },
-        {
-            t: "Троянські Коні Сучасності",
-            img: "q5-trojan-app.png",
-            info: "Іноді з неофіційних сайтів пропонують завантажити “безкоштовні” ігри або програми. Але такі файли можуть бути небезпечними і містити шкідливі функції, які маскується під потрібну програму. <br><br> Після запуску вони можуть непомітно отримати доступ до збережених паролів, акаунтів та інших даних на пристрої і передати їх зловмисникам. Саме тому безпечніше завантажувати ігри тільки з офіційних джерел.",
-            q: "Чому антивірус часто 'мовчить' під час запуску зламаних ігор?",
-            opts: [
-                { text: "Бо зламані ігри не є вірусами за визначенням", p: -5, f: "Помилка. Майже кожен 'кряк' містить шкідливий код для окупності роботи піратів." },
-                { text: "Бо антивіруси спеціально ігнорують ігри", p: 0, f: "Це міф. Антивірус захищає систему, а не вибирає типи програм." },
-                { text: "Хакери можуть спеціально змінювати віруси (так зване “криптування”), щоб вони виглядали як звичайні файли і не були помітні для антивірусів. Через це шкідливі програми інколи проходять захист і запускаються на комп’ютері непоміченими.", p: 8, f: "Так. Це постійна гра в кішки-мишки між хакерами та розробниками антивірусів." }
-            ]
-        },
-        {
-            t: "Двофакторний захист (2FA)",
-            img: "q6-2fa.png",
-            info: "Пароль — це як замок на дверях. А 2FA додає ще одне підтвердження, тому навіть якщо хтось дізнається пароль, він не зможе увійти без другого кроку.\n\nДругий крок може бути різним: код у SMS, код у спеціальному додатку або фізичний ключ. Усі вони працюють по-різному і мають різний рівень безпеки. У наступному питанні спробуй визначити, який спосіб захисту є найслабшим.",
-            q: "Який спосіб підтвердження входу може бути найменш безпечним?",
-            opts: [
-                { text: "SMS-повідомлення", p: 9, f: "Так. SMS можуть перехопити або перенести номер на іншу SIM-карту." },
-                { text: "Фізичний ключ", p: 0, f: "Ні. Це один із найнадійніших способів захисту." },
-                { text: "Код у додатку на телефоні", p: 0, f: "Це хороший і більш безпечний варіант, ніж SMS." }
-            ]
-        },
-        {
-            t: "Людина — найслабша ланка",
-            img: "q7-bank-call.png",
-            info: "Соціальні інженери можуть зателефонувати і представитися службою безпеки банку. <br><br>Вони будуть знати твоє ім'я і навіть останні цифри картки. Їх мета — змусити тебе назвати код з SMS. Запам'ятай: справжній банк ніколи не питає код.",
-            q: "Тобі дзвонить 'банк' і каже, що з картки прямо зараз крадуть гроші. Твої дії?",
-            opts: [
-                { text: "Швидко назвати код, щоб вони 'зупинили транзакцію'", p: -10, f: "Жах! Називаючи код, ти сам дозволяєш їм зняти всі твої кошти." },
-                { text: "Покласти слухавку і самому зателефонувати на офіційний номер банку", p: 9, f: "Ідеально! Тільки так ти переконаєшся, що говориш зі справжнім співробітником." },
-                { text: "Почати сперечатися і доводити, що вони шахраї", p: 2, f: "Зайва трата часу. Краще просто обірвати зв'язок." }
-            ]
-        },
-        {
-            t: "Цифрова Гігієна ПЗ",
-            img: "q8-security-update.jpg",
-            info: "Оновлення ПЗ (Програмного забезпечення) часто містять описи 'Security patches'. Це виправлення вразливостей, які вже знайшли хакери. <br><br>Якщо ти не оновлюєшся, твій пристрій стає мішенню для автоматичних атак, які шукають старі версії програм з відомими дірками.",
-            q: "Чому розробники випускають оновлення так часто?",
-            opts: [
-                { text: "Щоб програма займала більше місця на пристрої", p: 0, f: "Це побічний ефект, а не мета розробників." },
-                { text: "Щоб змінити дизайн і додати нову рекламу", p: 2, f: "Буває й таке, але головна причина — технічна стабільність та безпека." },
-                { text: "Щоб закрити 'дірки' в коді, які можуть використати хакери", p: 8, f: "Вірно! Це гонка озброєнь за безпеку твоїх даних." }
-            ]
-        },
-        {
-            t: "Економіка Даних",
-            img: "q9-permissions.jpg",
-            info: "Багато безкоштовних сервісів заробляють не на оплаті, а на даних користувачів. Додатки можуть збирати інформацію про твою активність, вподобання та використання сервісу.\n\nЧастина цих даних збирається через дозволи, які ти надаєш при встановленні або використанні додатку (наприклад, доступ до камери, мікрофона, контактів або геолокації). Небезпека з’являється тоді, коли додаток запитує доступи, які не потрібні для його роботи.",
-            q: "На що варто звернути увагу при встановленні нової гри?",
-            opts: [
-                { text: "На список дозволів, які вимагає програма", p: 8, f: "Так! Якщо гра просить доступ до мікрофона без причини — це підозріло." },
-                { text: "На те, скільки зірок у неї в магазині", p: 2, f: "Відгуки можна підробити. Зірки не є надійним показником безпеки." },
-                { text: "На розмір файлу гри", p: 0, f: "Розмір ніяк не вказує на наявність чи відсутність шпигунських модулів." }
-            ]
-        },
-        {
-            t: "Безпека в чатах",
-            img: "q10-chat-security.png",
-            info: "Навіть якщо чат захищений, не все безпечно туди надсилати.\n\nПаролі, коди з SMS і доступи до акаунтів не можна пересилати в повідомленнях. Хакери можуть перехопити твою інформацію.",
-            q: "Що НЕ варто надсилати через месенджери і чому?",
-            opts: [
-                { text: "Звичайні повідомлення друзям", p: 3, f: "Це нормально і не становить ризику." },
-                { text: "Паролі та коди з SMS, бо вони дають повний доступ до акаунтів", p: 8, f: "Так. Якщо їх отримають інші — можуть зайти у твої акаунти." },
-                { text: "Фото", p: 0, f: "Можна, але важливо думати про приватність зображення." }
-            ]
-        },
-        {
-            t: "Резервний Щит",
-            img: "q11-backup.png",
-            info: "Резервна копія — це дубль твоїх важливих файлів (фото, документи, проєкти), який потрібен, якщо щось зламається, зникне або буде атаковано вірусом.\n\nНайбезпечніший підхід — зберігати копії окремо від основного пристрою: наприклад, у хмарному сховищі або на зовнішньому диску, який не постійно підключений до комп’ютера.",
-            q: "Як правильно зберігати резервні копії (бекапи)?",
-            opts: [
-                { text: "В окремій папці на тому ж самому диску 'D:'", p: 0, f: "Це марно. Віруси-шифрувальники знищують дані на всіх дисках комп'ютера." },
-                { text: "Просто зберігати всі фото в пам'яті телефону", p: 2, f: "Телефон можна загубити або він може зламатися разом із даними." },
-                { text: "На окремому диску, який відключається від ПК після копіювання", p: 8, f: "Ідеально. Якщо вірус вразить ПК, він не зможе дістатися до відключеного диска." }
-            ]
-        },
-        {
-            t: "Кінцева Точка: Фізика",
-            img: "q12-usb-risk.jpeg",
-            info: "Всі твої цифрові замки марні, якщо хакер має фізичний доступ. <br><br>Існують USB-пристрої (BadUSB), які при підключенні розпізнаються системою як клавіатура. Вони вводять команди зі швидкістю 1000 слів на хвилину, зламуючи комп'ютер за мить.",
-            q: "Чому небезпечно заряджати телефон від невідомих USB-портів у вокзалах?",
-            opts: [
-                { text: "Порт може бути налаштований на передачу даних, а не тільки живлення", p: 8, f: "Вірно! Це називається 'Juice Jacking'. Використовуйте свій блок живлення." },
-                { text: "Через такий порт телефон буде заряджатися занадто повільно", p: 1, f: "Це дрібниця у порівнянні з ризиком крадіжки всіх твоїх фото." },
-                { text: "Це може зіпсувати батарею смартфона", p: 2, f: "Такий ризик є, але безпека даних — набагато серйозніша проблема." }
-            ]
-        }
+      {
+        t: "Математика Пароля",
+        img: "q1.jpg",
+        info: "Надійність пароля залежить від того, скільки різних варіантів потрібно перебрати, щоб його вгадати: чим довший пароль, тим більше варіантів і тим важче його зламати. Додавати різні символи корисно, але саме довжина дає найбільший захист. Наприклад, <strong>“12345”</strong> має лише 100 000 варіантів і ламається миттєво. Фраза <strong>“GreenCoffeeRunsAtNight”</strong> (~24 символи) має ≈10<sup>41</sup> комбінацій: навіть при 10<sup>12</sup> спроб/с повний перебір зайняв би близько <strong>10<sup>21</sup> років</strong>.",
+        q: "Який пароль є найбільш надійним?",
+        opts: [
+          { text: "Взяти своє ім'я та додати рік народження і знак '!'", p: 0, f: "Це перше, що перевірить програма хакера. Дуже слабкий захист." },
+          { text: "Використати 4-5 випадкових українських слів через дефіс", p: 9, f: "Блискуче! Це називається методом фраз-паролів. Довжина б’є будь-який перебір." },
+          { text: "Записати англійське слово, замінивши 's' на '$' і 'o' на '0'", p: 3, f: "Це стара техніка. Сучасні словники хакерів вже містять усі такі заміни." }
+        ]
+      },
+      {
+        t: "Привиди в Мережі",
+        img: "q2-wifi-cafe.jpg",
+        info: "Коли ти підключаєшся до відкритого Wi-Fi, твій телефон починає 'кричати' дані в повітря. <br><br>Зловмисник може провести атаку <b>Evil Twin</b>: створити мережу з такою ж назвою, як у кафе. Весь твій трафік пройде через його ноутбук, і він побачить твої сесії в соцмережах.",
+        q: "Як захиститися, якщо терміново потрібен інтернет у публічному місці?",
+        opts: [
+          { text: "Роздати інтернет з власного смартфона (Мобільний хот-спот)", p: 9, f: "Мобільний інтернет зазвичай безпечніший, бо трафік зашифрований і прив’язаний до SIM-карти, тому його складніше перехопити. Публічний Wi-Fi часто відкритий або слабо захищений, і через нього зловмисники можуть перехоплювати дані або створювати підробні точки доступу." },
+          { text: "Підключитися до Wi-Fi, але не вводити номер телефону", p: 2, f: "Це не допоможе. Дані все одно летять через чужий роутер у відкритому вигляді." },
+          { text: "Використовувати Wi-Fi тільки для перегляду новин, не заходячи в акаунти", p: 5, f: "Це компроміс. Але пам'ятайте: телефон може оновлювати пошту у фоні!" }
+        ]
+      },
+      {
+        t: "Метадані: Сліди, які ми не бачимо",
+        img: "q3-exif-geo.png",
+        info: "Кожне фото, зроблене на смартфон, може містити приховані дані — так звані EXIF-метадані. У них іноді зберігається не лише модель телефону і час зйомки, а й GPS-координати місця, де було зроблено фото, якщо ця функція увімкнена. <br><br> Це означає, що звичайне селфі потенційно може показати, де ти був у момент зйомки. Саме тому важливо розуміти, що публікуючи фото, ти інколи розповідаєш більше інформації, ніж здається на перший погляд.",
+        q: "Яка головна небезпека публікації оригінальних фото у соцмережах?",
+        opts: [
+          { text: "Фото можуть використати для створення мемів", p: 1, f: "Це неприємно, але не є критичною загрозою безпеці життя." },
+          { text: "Погіршується якість зображення при завантаженні", p: 0, f: "Це технічне питання, яке не стосується кібербезпеки." },
+          { text: "Злочинці можуть дізнатися місце проживання через геотеги", p: 9, f: "Саме так. Завжди перевіряй налаштування приватності камери." }
+        ]
+      },
+      {
+        t: "Мистецтво Фішингу",
+        img: "q4-phishing-mail.png",
+        info: "Хакери — чудові психологи. Вони шлють листи, що викликають паніку: <b>'Ваш акаунт зламано! Натисніть ТУТ для захисту'</b>. <br><br>Посилання веде на копію сайту. Як тільки ти вводиш пароль, він опиняється в базі хакера. Це називається соціальною інженерією.",
+        q: "Тобі прийшов лист від 'Адміністрації' з проханням терміново оновити дані. Що перевіриш?",
+        opts: [
+          { text: "Реальну адресу відправника та доменне ім’я сайту", p: 9, f: "Правильно! Офіційні листи ніколи не приходять з адрес на кшталт @gmail.com або @support-security.xyz." },
+          { text: "Чи є в листі офіційний логотип компанії", p: 0, f: "Логотип копіюється за одну секунду. Це не показник безпеки." },
+          { text: "Чи ввічливо до мене звертаються в листі", p: 1, f: "Шахраї бувають дуже ввічливими, щоб приспати твою пильність." }
+        ]
+      },
+      {
+        t: "Троянські Коні Сучасності",
+        img: "q5-trojan-app.png",
+        info: "Іноді з неофіційних сайтів пропонують завантажити “безкоштовні” ігри або програми. Але такі файли можуть бути небезпечними і містити шкідливі функції, які маскується під потрібну програму. <br><br> Після запуску вони можуть непомітно отримати доступ до збережених паролів, акаунтів та інших даних на пристрої і передати їх зловмисникам. Саме тому безпечніше завантажувати ігри тільки з офіційних джерел.",
+        q: "Чому антивірус часто 'мовчить' під час запуску зламаних ігор?",
+        opts: [
+          { text: "Бо зламані ігри не є вірусами за визначенням", p: -5, f: "Помилка. Майже кожен 'кряк' містить шкідливий код для окупності роботи піратів." },
+          { text: "Бо антивіруси спеціально ігнорують ігри", p: 0, f: "Це міф. Антивірус захищає систему, а не вибирає типи програм." },
+          { text: "Хакери можуть спеціально змінювати віруси (так зване “криптування”), щоб вони виглядали як звичайні файли і не були помітні для антивірусів. Через це шкідливі програми інколи проходять захист і запускаються на комп’ютері непоміченими.", p: 8, f: "Так. Це постійна гра в кішки-мишки між хакерами та розробниками антивірусів." }
+        ]
+      },
+      {
+        t: "Двофакторний захист (2FA)",
+        img: "q6-2fa.png",
+        info: "Пароль — це як замок на дверях. А 2FA додає ще одне підтвердження, тому навіть якщо хтось дізнається пароль, він не зможе увійти без другого кроку.\n\nДругий крок може бути різним: код у SMS, код у спеціальному додатку або фізичний ключ. Усі вони працюють по-різному і мають різний рівень безпеки. У наступному питанні спробуй визначити, який спосіб захисту є найслабшим.",
+        q: "Який спосіб підтвердження входу може бути найменш безпечним?",
+        opts: [
+          { text: "SMS-повідомлення", p: 9, f: "Так. SMS можуть перехопити або перенести номер на іншу SIM-карту." },
+          { text: "Фізичний ключ", p: 0, f: "Ні. Це один із найнадійніших способів захисту." },
+          { text: "Код у додатку на телефоні", p: 0, f: "Це хороший і більш безпечний варіант, ніж SMS." }
+        ]
+      },
+      {
+        t: "Людина — найслабша ланка",
+        img: "q7-bank-call.png",
+        info: "Соціальні інженери можуть зателефонувати і представитися службою безпеки банку. <br><br>Вони будуть знати твоє ім'я і навіть останні цифри картки. Їх мета — змусити тебе назвати код з SMS. Запам'ятай: справжній банк ніколи не питає код.",
+        q: "Тобі дзвонить 'банк' і каже, що з картки прямо зараз крадуть гроші. Твої дії?",
+        opts: [
+          { text: "Швидко назвати код, щоб вони 'зупинили транзакцію'", p: -10, f: "Жах! Називаючи код, ти сам дозволяєш їм зняти всі твої кошти." },
+          { text: "Покласти слухавку і самому зателефонувати на офіційний номер банку", p: 9, f: "Ідеально! Тільки так ти переконаєшся, що говориш зі справжнім співробітником." },
+          { text: "Почати сперечатися і доводити, що вони шахраї", p: 2, f: "Зайва трата часу. Краще просто обірвати зв'язок." }
+        ]
+      },
+      {
+        t: "Цифрова Гігієна ПЗ",
+        img: "q8-security-update.jpg",
+        info: "Оновлення ПЗ (Програмного забезпечення) часто містять описи 'Security patches'. Це виправлення вразливостей, які вже знайшли хакери. <br><br>Якщо ти не оновлюєшся, твій пристрій стає мішенню для автоматичних атак, які шукають старі версії програм з відомими дірками.",
+        q: "Чому розробники випускають оновлення так часто?",
+        opts: [
+          { text: "Щоб програма займала більше місця на пристрої", p: 0, f: "Це побічний ефект, а не мета розробників." },
+          { text: "Щоб змінити дизайн і додати нову рекламу", p: 2, f: "Буває й таке, але головна причина — технічна стабільність та безпека." },
+          { text: "Щоб закрити 'дірки' в коді, які можуть використати хакери", p: 8, f: "Вірно! Це гонка озброєнь за безпеку твоїх даних." }
+        ]
+      },
+      {
+        t: "Економіка Даних",
+        img: "q9-permissions.jpg",
+        info: "Багато безкоштовних сервісів заробляють не на оплаті, а на даних користувачів. Додатки можуть збирати інформацію про твою активність, вподобання та використання сервісу.\n\nЧастина цих даних збирається через дозволи, які ти надаєш при встановленні або використанні додатку (наприклад, доступ до камери, мікрофона, контактів або геолокації). Небезпека з’являється тоді, коли додаток запитує доступи, які не потрібні для його роботи.",
+        q: "На що варто звернути увагу при встановленні нової гри?",
+        opts: [
+          { text: "На список дозволів, які вимагає програма", p: 8, f: "Так! Якщо гра просить доступ до мікрофона без причини — це підозріло." },
+          { text: "На те, скільки зірок у неї в магазині", p: 2, f: "Відгуки можна підробити. Зірки не є надійним показником безпеки." },
+          { text: "На розмір файлу гри", p: 0, f: "Розмір ніяк не вказує на наявність чи відсутність шпигунських модулів." }
+        ]
+      },
+      {
+        t: "Безпека в чатах",
+        img: "q10-chat-security.png",
+        info: "Навіть якщо чат захищений, не все безпечно туди надсилати.\n\nПаролі, коди з SMS і доступи до акаунтів не можна пересилати в повідомленнях. Хакери можуть перехопити твою інформацію.",
+        q: "Що НЕ варто надсилати через месенджери і чому?",
+        opts: [
+          { text: "Звичайні повідомлення друзям", p: 3, f: "Це нормально і не становить ризику." },
+          { text: "Паролі та коди з SMS, бо вони дають повний доступ до акаунтів", p: 8, f: "Так. Якщо їх отримають інші — можуть зайти у твої акаунти." },
+          { text: "Фото", p: 0, f: "Можна, але важливо думати про приватність зображення." }
+        ]
+      },
+      {
+        t: "Резервний Щит",
+        img: "q11-backup.png",
+        info: "Резервна копія — це дубль твоїх важливих файлів (фото, документи, проєкти), який потрібен, якщо щось зламається, зникне або буде атаковано вірусом.\n\nНайбезпечніший підхід — зберігати копії окремо від основного пристрою: наприклад, у хмарному сховищі або на зовнішньому диску, який не постійно підключений до комп’ютера.",
+        q: "Як правильно зберігати резервні копії (бекапи)?",
+        opts: [
+          { text: "В окремій папці на тому ж самому диску 'D:'", p: 0, f: "Це марно. Віруси-шифрувальники знищують дані на всіх дисках комп'ютера." },
+          { text: "Просто зберігати всі фото в пам'яті телефону", p: 2, f: "Телефон можна загубити або він може зламатися разом із даними." },
+          { text: "На окремому диску, який відключається від ПК після копіювання", p: 8, f: "Ідеально. Якщо вірус вразить ПК, він не зможе дістатися до відключеного диска." }
+        ]
+      },
+      {
+        t: "Кінцева Точка: Фізика",
+        img: "q12-usb-risk.jpeg",
+        info: "Всі твої цифрові замки марні, якщо хакер має фізичний доступ. <br><br>Існують USB-пристрої (BadUSB), які при підключенні розпізнаються системою як клавіатура. Вони вводять команди зі швидкістю 1000 слів на хвилину, зламуючи комп'ютер за мить.",
+        q: "Чому небезпечно заряджати телефон від невідомих USB-портів у вокзалах?",
+        opts: [
+          { text: "Порт може бути налаштований на передачу даних, а не тільки живлення", p: 8, f: "Вірно! Це називається 'Juice Jacking'. Використовуйте свій блок живлення." },
+          { text: "Через такий порт телефон буде заряджатися занадто повільно", p: 1, f: "Це дрібниця у порівнянні з ризиком крадіжки всіх твоїх фото." },
+          { text: "Це може зіпсувати батарею смартфона", p: 2, f: "Такий ризик є, але безпека даних — набагато серйозніша проблема." }
+        ]
+      }
     ];
 
     function updateHUD() {
-        score = Math.max(0, Math.min(100, score));
+      score = Math.max(0, Math.min(100, score));
 
-        document.getElementById('perc').innerText = score;
-        document.getElementById('lvl').innerText = Math.min(step + 1, db.length);
+      document.getElementById("perc").innerText = score;
+      document.getElementById("lvl").innerText = Math.min(step + 1, db.length);
 
-        document.getElementById('l1').classList.toggle('layer-active', score >= 33);
-        document.getElementById('l2').classList.toggle('layer-active', score >= 66);
-        document.getElementById('l3').classList.toggle('layer-active', score >= 95);
+      document.getElementById("l1").classList.toggle("layer-active", score >= 33);
+      document.getElementById("l2").classList.toggle("layer-active", score >= 66);
+      document.getElementById("l3").classList.toggle("layer-active", score >= 95);
 
-        const core = document.getElementById('core-node');
-        if (score >= 90) core.innerText = "💠";
-        else if (score >= 50) core.innerText = "🛡️";
-        else core.innerText = "💻";
+      const core = document.getElementById("core-node");
+      if (score >= 90) core.innerText = "💠";
+      else if (score >= 50) core.innerText = "🛡️";
+      else core.innerText = "💻";
     }
 
     function render() {
-        const view = document.getElementById('view');
-        const data = db[step];
+      const view = document.getElementById("view");
+      const data = db[step];
 
-        if (state === 'theory') {
-            view.innerHTML = `
-                <h2>${data.t}</h2>
-                ${data.img ? `<div class="q-image-wrap"><img class="q-image" src="${data.img}" alt="Ілюстрація теми"></div>` : ''}
-                <div class="theory-text">${data.info}</div>
-                <button class="action-btn" style="width:100%" onclick="startQuestion()">Увійти в симуляцію</button>
-            `;
-        } else {
-            view.innerHTML = `
-                <p style="font-size:12px; color:var(--neon); margin-bottom:10px; letter-spacing:1px">Ухвали рішення:</p>
-                ${data.img ? `<div class="q-image-wrap"><img class="q-image" src="${data.img}" alt="Ілюстрація питання"></div>` : ''}
-                <h2>${data.q}</h2>
-                <div class="opt-list" id="opts"></div>
-                <div id="fb" style="display:none"></div>
-                <button id="next" class="action-btn" style="display:none; width:100%" onclick="next()">Наступний рівень</button>
-            `;
+      if (state === "theory") {
+        view.innerHTML = `
+          <h2>${data.t}</h2>
+          ${data.img ? `<div class="q-image-wrap"><img class="q-image" src="${data.img}" alt="Ілюстрація теми"></div>` : ""}
+          <div class="theory-text">${data.info}</div>
+          <button class="action-btn" style="width:100%" onclick="startQuestion()">Увійти в симуляцію</button>
+        `;
+      } else {
+        view.innerHTML = `
+          <p style="font-size:12px; color:var(--neon); margin-bottom:10px; letter-spacing:1px">Ухвали рішення:</p>
+          ${data.img ? `<div class="q-image-wrap"><img class="q-image" src="${data.img}" alt="Ілюстрація питання"></div>` : ""}
+          <h2>${data.q}</h2>
+          <div class="opt-list" id="opts"></div>
+          <div id="fb" style="display:none"></div>
+          <button id="next" class="action-btn" style="display:none; width:100%" onclick="next()">Наступний рівень</button>
+        `;
 
-            data.opts.forEach(o => {
-                const b = document.createElement('button');
-                b.className = 'opt-btn';
-                b.innerText = o.text;
-                b.onclick = () => {
-                    score += o.p;
-                    updateHUD();
+        data.opts.forEach(o => {
+          const b = document.createElement("button");
+          b.className = "opt-btn";
+          b.innerText = o.text;
+          b.onclick = () => {
+            score += o.p;
+            updateHUD();
 
-                    document.getElementById('opts').style.display = 'none';
-                    const f = document.getElementById('fb');
-                    const isCorrect = o.p > 5;
-                    f.className = isCorrect ? 'correct' : 'wrong';
-                    f.innerHTML = `<b>${isCorrect ? 'СТАТУС: ЗАХИЩЕНО' : 'СТАТУС: ВРАЗЛИВО'}</b><br>${o.f}`;
-                    f.style.display = 'block';
-                    document.getElementById('next').style.display = 'block';
+            document.getElementById("opts").style.display = "none";
+            const f = document.getElementById("fb");
+            const isCorrect = o.p > 5;
+            f.className = isCorrect ? "correct" : "wrong";
+            f.innerHTML = `<b>${isCorrect ? "СТАТУС: ЗАХИЩЕНО" : "СТАТУС: ВРАЗЛИВО"}</b><br>${o.f}`;
+            f.style.display = "block";
+            document.getElementById("next").style.display = "block";
 
-                    if (isCorrect) playCorrectSfx();
-                    else playWrongSfx();
-                };
-                document.getElementById('opts').appendChild(b);
-            });
-        }
+            if (isCorrect) playCorrectSfx();
+            else playWrongSfx();
+          };
+          document.getElementById("opts").appendChild(b);
+        });
+      }
     }
 
     function startQuestion() {
-        state = 'q';
-        render();
+      state = "q";
+      render();
     }
 
     function restartQuiz() {
-        step = 0;
-        score = 0;
-        state = 'theory';
+      step = 0;
+      score = 0;
+      state = "theory";
 
-        document.getElementById('main-content').innerHTML = `<div id="view"></div>`;
+      document.getElementById("main-content").innerHTML = `<div id="view"></div>`;
 
-        if (musicOn) startMusic();
+      if (musicOn) startMusic();
 
-        updateHUD();
-        render();
+      updateHUD();
+      render();
     }
 
-    function getResultMeta(score) {
-        if (score >= 85) {
-            return {
-                title: "Кібермайстер",
-                message: "Ви побудували дуже надійну цифрову фортецю. Чудове критичне мислення та уважність до ризиків.",
-                emoji: "💎"
-            };
-        }
-        if (score >= 70) {
-            return {
-                title: "Сильний захист",
-                message: "Тест завершено успішно. Ваш захист хороший, але ще є кілька зон, які варто підсилити.",
-                emoji: "🛡️"
-            };
-        }
-        if (score >= 45) {
-            return {
-                title: "Є прогрес",
-                message: "База вже є, але частина рішень залишає вразливості. Варто повторити теми про фішинг, паролі та 2FA.",
-                emoji: "⚙️"
-            };
-        }
+    function getResultMeta(currentScore) {
+      if (currentScore >= 85) {
         return {
-            title: "Потрібне підсилення",
-            message: "Наразі цифровий захист слабкий. Рекомендуємо пройти тест ще раз і звернути увагу на пояснення після кожної відповіді.",
-            emoji: "🚨"
+          title: "Кібермайстер",
+          message: "Ви побудували дуже надійну цифрову фортецю. Чудове критичне мислення та уважність до ризиків.",
+          emoji: "💎"
         };
+      }
+      if (currentScore >= 70) {
+        return {
+          title: "Сильний захист",
+          message: "Тест завершено успішно. Ваш захист хороший, але ще є кілька зон, які варто підсилити.",
+          emoji: "🛡️"
+        };
+      }
+      if (currentScore >= 45) {
+        return {
+          title: "Є прогрес",
+          message: "База вже є, але частина рішень залишає вразливості. Варто повторити теми про фішинг, паролі та 2FA.",
+          emoji: "⚙️"
+        };
+      }
+      return {
+        title: "Потрібне підсилення",
+        message: "Наразі цифровий захист слабкий. Рекомендуємо пройти тест ще раз і звернути увагу на пояснення після кожної відповіді.",
+        emoji: "🚨"
+      };
     }
 
     function next() {
-        step++;
+      step++;
 
-        if (step >= db.length) {
-            const result = getResultMeta(score);
-            const success = score >= 70;
+      if (step >= db.length) {
+        const result = getResultMeta(score);
+        const success = score >= 70;
 
-            if (success) {
-                launchConfetti();
-                playConfettiSfx();
-            }
-
-            document.getElementById('main-content').innerHTML = `
-                <div style="text-align:center; padding:20px">
-                    <div class="finish-badge">Тест завершено</div>
-                    <h2 style="font-size:32px; margin-bottom:10px">${result.title}</h2>
-                    <div style="font-size:80px; margin:30px; filter: drop-shadow(0 0 20px var(--neon))">${result.emoji}</div>
-                    <p style="font-size:19px; font-weight:700; margin:0 0 10px 0;">
-                        ${success ? '✅ Тест завершено успішно.' : '✅ Тест завершено.'}
-                    </p>
-                    <p style="font-size:18px">Коефіцієнт захисту: <b style="color:var(--neon)">${score}%</b></p>
-                    <p style="color:#94a3b8; font-size:15px; margin-top:20px">${result.message}</p>
-                    <button class="action-btn" onclick="restartQuiz()" style="width:100%; margin-top:30px">Пройти тест ще раз</button>
-                </div>
-            `;
-            updateHUD();
-        } else {
-            state = 'theory';
-            render();
-            updateHUD();
+        if (success) {
+          launchConfetti();
+          playConfettiSfx();
         }
+
+        document.getElementById("main-content").innerHTML = `
+          <div style="text-align:center; padding:20px">
+            <div class="finish-badge">Тест завершено</div>
+            <h2 style="font-size:32px; margin-bottom:10px">${result.title}</h2>
+            <div style="font-size:80px; margin:30px; filter: drop-shadow(0 0 20px var(--neon))">${result.emoji}</div>
+            <p style="font-size:19px; font-weight:700; margin:0 0 10px 0;">
+              ${success ? "✅ Тест завершено успішно." : "✅ Тест завершено."}
+            </p>
+            <p style="font-size:18px">Коефіцієнт захисту: <b style="color:var(--neon)">${score}%</b></p>
+            <p style="color:#94a3b8; font-size:15px; margin-top:20px">${result.message}</p>
+            <button class="action-btn" onclick="restartQuiz()" style="width:100%; margin-top:30px">Пройти тест ще раз</button>
+          </div>
+        `;
+        updateHUD();
+      } else {
+        state = "theory";
+        render();
+        updateHUD();
+      }
     }
 
-    document.getElementById('music-toggle').addEventListener('click', toggleMusic);
+    document.getElementById("music-toggle").addEventListener("click", toggleMusic);
 
     initMusicAutostart();
     updateHUD();
     render();
-</script>
-
+  </script>
 </body>
 </html>
