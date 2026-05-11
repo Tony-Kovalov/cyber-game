@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Cyber Architect: Ultra Edition</title>
     <style>
         :root {
@@ -14,10 +14,6 @@
             --text: #e2e8f0;
             --line-height: 1.8;
         }
-        <audio id="bgm" loop playsinline preload="auto">
-          <!-- ВСТАВ СВІЙ ФАЙЛ ТУТ -->
-          <source src="the_mountain-control-system-142290.mp3" type="audio/mpeg">
-        </audio>
 
         body {
             background-color: var(--bg);
@@ -25,7 +21,7 @@
                 radial-gradient(at 0% 0%, rgba(112, 0, 255, 0.15) 0px, transparent 50%),
                 radial-gradient(at 100% 100%, rgba(0, 242, 255, 0.1) 0px, transparent 50%);
             color: var(--text);
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             display: flex;
             justify-content: center;
@@ -46,7 +42,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-family: 'Courier New', monospace;
+            font-family: "Courier New", monospace;
             color: var(--neon);
             font-size: 14px;
             text-transform: uppercase;
@@ -154,23 +150,24 @@
         .theory-text b { color: #fff; border-bottom: 1px solid var(--energy); }
 
         .q-image-wrap {
-    margin: 0 0 16px 0;
-    border-radius: 16px;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.12);
-    background: rgba(255,255,255,0.04);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px;
-}
-.q-image {
-    width: 100%;
-    height: auto;         /* головне */
-    max-height: 260px;    /* щоб не займала пів екрана */
-    object-fit: contain;  /* замість cover */
-    display: block;
-}
+            margin: 0 0 16px 0;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+        }
+
+        .q-image {
+            width: 100%;
+            height: auto;
+            max-height: 260px;
+            object-fit: contain;
+            display: block;
+        }
 
         .opt-list {
             display: flex;
@@ -259,7 +256,6 @@
     </style>
 </head>
 <body>
-
 <div id="app">
     <div class="hud">
         <div class="hud-left">
@@ -281,109 +277,85 @@
     </div>
 </div>
 
+<!-- Музика (поклади mp3 поруч із html або вкажи точний шлях) -->
+<audio id="bgm" loop playsinline preload="auto">
+    <source src="the_mountain-control-system-142290.mp3" type="audio/mpeg" />
+</audio>
+
 <script>
     let step = 0;
     let score = 0;
-    let state = 'theory';
+    let state = "theory";
 
-// ===== Фонова музика через mp3 =====
-const bgm = document.getElementById('bgm');
-let musicOn = true; // за замовчуванням увімкнено
+    // ===== Фонова музика через mp3 =====
+    const bgm = document.getElementById("bgm");
+    let musicOn = true;
 
-function setMusicButtonLabel() {
-    const btn = document.getElementById('music-toggle');
-    if (!btn) return;
-    btn.innerText = musicOn ? '🔊 Музика: ON' : '🔇 Музика: OFF';
-}
+    function setMusicButtonLabel() {
+        const btn = document.getElementById("music-toggle");
+        if (!btn) return;
+        btn.innerText = musicOn ? "🔊 Музика: ON" : "🔇 Музика: OFF";
+    }
 
-function startMusic() {
-    if (!musicOn || !bgm) return;
-    bgm.volume = 0.45; // підкрути 0.3..0.8 за потреби
-    bgm.play().catch(() => {});
-}
+    function startMusic() {
+        if (!musicOn || !bgm) return;
+        bgm.volume = 0.5;
+        bgm.play().catch(() => {});
+    }
 
-function stopMusic() {
-    if (!bgm) return;
-    bgm.pause();
-}
+    function stopMusic() {
+        if (!bgm) return;
+        bgm.pause();
+    }
 
-function toggleMusic() {
-    musicOn = !musicOn;
-    setMusicButtonLabel();
-    if (musicOn) startMusic();
-    else stopMusic();
-}
+    function toggleMusic() {
+        musicOn = !musicOn;
+        setMusicButtonLabel();
+        if (musicOn) startMusic();
+        else stopMusic();
+    }
 
-function initMusicAutostart() {
-    setMusicButtonLabel();
+    function initMusicAutostart() {
+        setMusicButtonLabel();
 
-    // iPhone/Telegram: запуск після першого тачу
-    const unlock = () => {
-        startMusic();
-        document.removeEventListener('touchstart', unlock);
-        document.removeEventListener('pointerdown', unlock);
-        document.removeEventListener('click', unlock);
-        document.removeEventListener('keydown', unlock);
-    };
+        const unlock = () => {
+            startMusic();
+            document.removeEventListener("touchstart", unlock);
+            document.removeEventListener("pointerdown", unlock);
+            document.removeEventListener("click", unlock);
+            document.removeEventListener("keydown", unlock);
+        };
 
-    document.addEventListener('touchstart', unlock, { once: true, passive: true });
-    document.addEventListener('pointerdown', unlock, { once: true });
-    document.addEventListener('click', unlock, { once: true });
-    document.addEventListener('keydown', unlock, { once: true });
+        document.addEventListener("touchstart", unlock, { once: true, passive: true });
+        document.addEventListener("pointerdown", unlock, { once: true });
+        document.addEventListener("click", unlock, { once: true });
+        document.addEventListener("keydown", unlock, { once: true });
 
-    // коли сторінка йде у фон — ставимо паузу
-    document.addEventListener('visibilitychange', () => {
-        if (document.hidden) stopMusic();
-        else if (musicOn) startMusic();
-    });
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) stopMusic();
+            else if (musicOn) startMusic();
+        });
 
-    window.addEventListener('pagehide', stopMusic);
-    window.addEventListener('beforeunload', stopMusic);
-    window.addEventListener('blur', stopMusic);
-
-    window.addEventListener('pageshow', () => {
-        if (!document.hidden && musicOn) startMusic();
-    });
-}
-// SFX
-function playCorrectSfx() {
-    if (!audioCtx) return;
-    const t = audioCtx.currentTime + 0.01;
-    makeVoice('square', 523.25, t, 0.14, 0.03);
-    makeVoice('square', 659.25, t + 0.12, 0.16, 0.03);
-    makeVoice('square', 783.99, t + 0.24, 0.22, 0.035);
-    makeNoise(t + 0.10, 0.10, 0.004);
-}
-
-function playWrongSfx() {
-    if (!audioCtx) return;
-    const t = audioCtx.currentTime + 0.01;
-    makeVoice('sawtooth', 220.00, t, 0.16, 0.03);
-    makeVoice('sawtooth', 174.61, t + 0.12, 0.20, 0.03);
-    makeVoice('triangle', 130.81, t + 0.24, 0.26, 0.028);
-}
-
-function playFinishJingle() {
-    if (!audioCtx) return;
-    const t = audioCtx.currentTime + 0.02;
-    makeVoice('square', 392.00, t, 0.20, 0.03);
-    makeVoice('square', 523.25, t + 0.22, 0.22, 0.03);
-    makeVoice('square', 659.25, t + 0.48, 0.26, 0.032);
-    makeVoice('triangle', 783.99, t + 0.78, 0.35, 0.028);
-}
+        window.addEventListener("pagehide", stopMusic);
+        window.addEventListener("beforeunload", stopMusic);
+        window.addEventListener("blur", stopMusic);
+        window.addEventListener("pageshow", () => {
+            if (!document.hidden && musicOn) startMusic();
+        });
+    }
 
     function launchConfetti() {
-        const colors = ['#00f2ff', '#7000ff', '#ff007b', '#22c55e', '#facc15', '#ffffff'];
+        const colors = ["#00f2ff", "#7000ff", "#ff007b", "#22c55e", "#facc15", "#ffffff"];
         const count = 140;
 
         for (let i = 0; i < count; i++) {
-            const el = document.createElement('div');
-            el.className = 'confetti';
-            el.style.left = Math.random() * 100 + 'vw';
+            const el = document.createElement("div");
+            el.className = "confetti";
+            el.style.left = Math.random() * 100 + "vw";
             el.style.background = colors[Math.floor(Math.random() * colors.length)];
             el.style.transform = `translateY(0) rotate(${Math.random() * 360}deg)`;
-            el.style.animationDuration = (2.2 + Math.random() * 1.8) + 's';
-            el.style.animationDelay = (Math.random() * 0.4) + 's';
+            el.style.animationDuration = (2.2 + Math.random() * 1.8) + "s";
+            el.style.animationDelay = (Math.random() * 0.4) + "s";
             document.body.appendChild(el);
             setTimeout(() => el.remove(), 4500);
         }
@@ -527,34 +499,34 @@ function playFinishJingle() {
     function updateHUD() {
         score = Math.max(0, Math.min(100, score));
 
-        document.getElementById('perc').innerText = score;
-        document.getElementById('lvl').innerText = Math.min(step + 1, db.length);
+        document.getElementById("perc").innerText = score;
+        document.getElementById("lvl").innerText = Math.min(step + 1, db.length);
 
-        document.getElementById('l1').classList.toggle('layer-active', score >= 33);
-        document.getElementById('l2').classList.toggle('layer-active', score >= 66);
-        document.getElementById('l3').classList.toggle('layer-active', score >= 95);
+        document.getElementById("l1").classList.toggle("layer-active", score >= 33);
+        document.getElementById("l2").classList.toggle("layer-active", score >= 66);
+        document.getElementById("l3").classList.toggle("layer-active", score >= 95);
 
-        const core = document.getElementById('core-node');
-        if (score >= 90) core.innerText = "💻";
-        else if (score >= 50) core.innerText = "💻️";
+        const core = document.getElementById("core-node");
+        if (score >= 90) core.innerText = "💠";
+        else if (score >= 50) core.innerText = "🛡️";
         else core.innerText = "💻";
     }
 
     function render() {
-        const view = document.getElementById('view');
+        const view = document.getElementById("view");
         const data = db[step];
 
-        if (state === 'theory') {
+        if (state === "theory") {
             view.innerHTML = `
                 <h2>${data.t}</h2>
-                ${data.img ? `<div class="q-image-wrap"><img class="q-image" src="${data.img}" alt="Ілюстрація теми"></div>` : ''}
+                ${data.img ? `<div class="q-image-wrap"><img class="q-image" src="${data.img}" alt="Ілюстрація теми"></div>` : ""}
                 <div class="theory-text">${data.info}</div>
                 <button class="action-btn" style="width:100%" onclick="startQuestion()">Увійти в симуляцію</button>
             `;
         } else {
             view.innerHTML = `
                 <p style="font-size:12px; color:var(--neon); margin-bottom:10px; letter-spacing:1px">Ухвали рішення:</p>
-                ${data.img ? `<div class="q-image-wrap"><img class="q-image" src="${data.img}" alt="Ілюстрація питання"></div>` : ''}
+                ${data.img ? `<div class="q-image-wrap"><img class="q-image" src="${data.img}" alt="Ілюстрація питання"></div>` : ""}
                 <h2>${data.q}</h2>
                 <div class="opt-list" id="opts"></div>
                 <div id="fb" style="display:none"></div>
@@ -562,125 +534,108 @@ function playFinishJingle() {
             `;
 
             data.opts.forEach(o => {
-                const b = document.createElement('button');
-                b.className = 'opt-btn';
+                const b = document.createElement("button");
+                b.className = "opt-btn";
                 b.innerText = o.text;
                 b.onclick = () => {
-                    ensureAudio();
-
                     score += o.p;
                     updateHUD();
 
-                    document.getElementById('opts').style.display = 'none';
-                    const f = document.getElementById('fb');
+                    document.getElementById("opts").style.display = "none";
+                    const f = document.getElementById("fb");
                     const isCorrect = o.p > 5;
-                    f.className = isCorrect ? 'correct' : 'wrong';
-                    f.innerHTML = `<b>${isCorrect ? 'СТАТУС: ЗАХИЩЕНО' : 'СТАТУС: ВРАЗЛИВО'}</b><br>${o.f}`;
-                    f.style.display = 'block';
-                    document.getElementById('next').style.display = 'block';
-
-                    if (isCorrect) playCorrectSfx();
-                    else playWrongSfx();
+                    f.className = isCorrect ? "correct" : "wrong";
+                    f.innerHTML = `<b>${isCorrect ? "СТАТУС: ЗАХИЩЕНО" : "СТАТУС: ВРАЗЛИВО"}</b><br>${o.f}`;
+                    f.style.display = "block";
+                    document.getElementById("next").style.display = "block";
                 };
-                document.getElementById('opts').appendChild(b);
+                document.getElementById("opts").appendChild(b);
             });
         }
     }
 
     function startQuestion() {
-        ensureAudio();
-        state = 'q';
+        state = "q";
         render();
     }
 
     function restartQuiz() {
-        if (musicTimer) {
-            clearTimeout(musicTimer);
-            musicTimer = null;
-        }
-
         step = 0;
         score = 0;
-        state = 'theory';
+        state = "theory";
 
-        document.getElementById('main-content').innerHTML = `<div id="view"></div>`;
+        document.getElementById("main-content").innerHTML = `<div id="view"></div>`;
 
-        if (musicOn) {
-            ensureAudio();
-            musicStep();
-        }
+        if (musicOn) startMusic();
 
         updateHUD();
         render();
     }
 
-    function getResultMeta(score) {
-    if (score >= 85) {
+    function getResultMeta(currentScore) {
+        if (currentScore >= 85) {
+            return {
+                title: "Кібермайстер",
+                message: "Ви побудували дуже надійну цифрову фортецю. Чудове критичне мислення та уважність до ризиків.",
+                emoji: "💎"
+            };
+        }
+        if (currentScore >= 70) {
+            return {
+                title: "Сильний захист",
+                message: "Тест завершено успішно. Ваш захист хороший, але ще є кілька зон, які варто підсилити.",
+                emoji: "🛡️"
+            };
+        }
+        if (currentScore >= 45) {
+            return {
+                title: "Є прогрес",
+                message: "База вже є, але частина рішень залишає вразливості. Варто повторити теми про фішинг, паролі та 2FA.",
+                emoji: "⚙️"
+            };
+        }
         return {
-            title: "Кібермайстер",
-            message: "Ви побудували дуже надійну цифрову фортецю. Чудове критичне мислення та уважність до ризиків.",
-            emoji: "💎"
+            title: "Потрібне підсилення",
+            message: "Наразі цифровий захист слабкий. Рекомендуємо пройти тест ще раз і звернути увагу на пояснення після кожної відповіді.",
+            emoji: "🚨"
         };
     }
-    if (score >= 70) {
-        return {
-            title: "Сильний захист",
-            message: "Тест завершено успішно. Ваш захист хороший, але ще є кілька зон, які варто підсилити.",
-            emoji: "🛡️"
-        };
-    }
-    if (score >= 45) {
-        return {
-            title: "Є прогрес",
-            message: "База вже є, але частина рішень залишає вразливості. Варто повторити теми про фішинг, паролі та 2FA.",
-            emoji: "⚙️"
-        };
-    }
-    return {
-        title: "Потрібне підсилення",
-        message: "Наразі цифровий захист слабкий. Рекомендуємо пройти тест ще раз і звернути увагу на пояснення після кожної відповіді.",
-        emoji: "🚨"
-    };
-}
 
     function next() {
-    ensureAudio();
-    step++;
+        step++;
 
-    if (step >= db.length) {
-        playFinishJingle();
+        if (step >= db.length) {
+            const result = getResultMeta(score);
+            const success = score >= 70;
 
-        const result = getResultMeta(score);
-        const success = score >= 70;
+            if (success) launchConfetti();
 
-        if (success) launchConfetti();
-
-        document.getElementById('main-content').innerHTML = `
-            <div style="text-align:center; padding:20px">
-                <div class="finish-badge">Тест завершено</div>
-                <h2 style="font-size:32px; margin-bottom:10px">${result.title}</h2>
-                <div style="font-size:80px; margin:30px; filter: drop-shadow(0 0 20px var(--neon))">${result.emoji}</div>
-                <p style="font-size:19px; font-weight:700; margin:0 0 10px 0;">
-                    ${success ? '✅ Тест завершено успішно.' : '✅ Тест завершено.'}
-                </p>
-                <p style="font-size:18px">Коефіцієнт захисту: <b style="color:var(--neon)">${score}%</b></p>
-                <p style="color:#94a3b8; font-size:15px; margin-top:20px">${result.message}</p>
-                <button class="action-btn" onclick="restartQuiz()" style="width:100%; margin-top:30px">Пройти тест ще раз</button>
-            </div>
-        `;
-        updateHUD();
-    } else {
-        state = 'theory';
-        render();
-        updateHUD();
+            document.getElementById("main-content").innerHTML = `
+                <div style="text-align:center; padding:20px">
+                    <div class="finish-badge">Тест завершено</div>
+                    <h2 style="font-size:32px; margin-bottom:10px">${result.title}</h2>
+                    <div style="font-size:80px; margin:30px; filter: drop-shadow(0 0 20px var(--neon))">${result.emoji}</div>
+                    <p style="font-size:19px; font-weight:700; margin:0 0 10px 0;">
+                        ${success ? "✅ Тест завершено успішно." : "✅ Тест завершено."}
+                    </p>
+                    <p style="font-size:18px">Коефіцієнт захисту: <b style="color:var(--neon)">${score}%</b></p>
+                    <p style="color:#94a3b8; font-size:15px; margin-top:20px">${result.message}</p>
+                    <button class="action-btn" onclick="restartQuiz()" style="width:100%; margin-top:30px">Пройти тест ще раз</button>
+                </div>
+            `;
+            updateHUD();
+        } else {
+            state = "theory";
+            render();
+            updateHUD();
+        }
     }
-}
 
-    document.getElementById('music-toggle').addEventListener('click', toggleMusic);
+    document.getElementById("music-toggle").addEventListener("click", toggleMusic);
+
     initMusicAutostart();
     updateHUD();
     render();
 </script>
-
 </body>
 </html>
