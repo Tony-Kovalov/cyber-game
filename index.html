@@ -670,36 +670,67 @@
         render();
     }
 
-    function next() {
-        ensureAudio();
-        step++;
-
-        if (step >= db.length) {
-            playFinishJingle();
-
-            const success = score >= 70;
-            if (success) launchConfetti();
-
-            document.getElementById('main-content').innerHTML = `
-                <div style="text-align:center; padding:20px">
-                    <div class="finish-badge">Тест завершено</div>
-                    <h2 style="font-size:32px; margin-bottom:10px">MISSION COMPLETE</h2>
-                    <div style="font-size:80px; margin:30px; filter: drop-shadow(0 0 20px var(--neon))">💎</div>
-                    <p style="font-size:19px; font-weight:700; margin:0 0 10px 0;">
-                        ${success ? '✅ Ви пройшли всі рівні. Тест завершено успішно.' : '✅ Ви пройшли всі рівні. Тест завершено.'}
-                    </p>
-                    <p style="font-size:18px">Коефіцієнт захисту: <b style="color:var(--neon)">${score}%</b></p>
-                    <p style="color:#94a3b8; font-size:15px; margin-top:20px">Ви побудували цифрову фортецю, яку майже неможливо зламати. Знання та критичне мислення — це ваш найкращий антивірус.</p>
-                    <button class="action-btn" onclick="restartQuiz()" style="width:100%; margin-top:30px">Пройти тест ще раз</button>
-                </div>
-            `;
-            updateHUD();
-        } else {
-            state = 'theory';
-            render();
-            updateHUD();
-        }
+    function getResultMeta(score) {
+    if (score >= 85) {
+        return {
+            title: "Кібермайстер",
+            message: "Ви побудували дуже надійну цифрову фортецю. Чудове критичне мислення та уважність до ризиків.",
+            emoji: "💎"
+        };
     }
+    if (score >= 70) {
+        return {
+            title: "Сильний захист",
+            message: "Тест завершено успішно. Ваш захист хороший, але ще є кілька зон, які варто підсилити.",
+            emoji: "🛡️"
+        };
+    }
+    if (score >= 45) {
+        return {
+            title: "Є прогрес",
+            message: "База вже є, але частина рішень залишає вразливості. Варто повторити теми про фішинг, паролі та 2FA.",
+            emoji: "⚙️"
+        };
+    }
+    return {
+        title: "Потрібне підсилення",
+        message: "Наразі цифровий захист слабкий. Рекомендуємо пройти тест ще раз і звернути увагу на пояснення після кожної відповіді.",
+        emoji: "🚨"
+    };
+}
+
+    function next() {
+    ensureAudio();
+    step++;
+
+    if (step >= db.length) {
+        playFinishJingle();
+
+        const result = getResultMeta(score);
+        const success = score >= 70;
+
+        if (success) launchConfetti();
+
+        document.getElementById('main-content').innerHTML = `
+            <div style="text-align:center; padding:20px">
+                <div class="finish-badge">Тест завершено</div>
+                <h2 style="font-size:32px; margin-bottom:10px">${result.title}</h2>
+                <div style="font-size:80px; margin:30px; filter: drop-shadow(0 0 20px var(--neon))">${result.emoji}</div>
+                <p style="font-size:19px; font-weight:700; margin:0 0 10px 0;">
+                    ${success ? '✅ Тест завершено успішно.' : '✅ Тест завершено.'}
+                </p>
+                <p style="font-size:18px">Коефіцієнт захисту: <b style="color:var(--neon)">${score}%</b></p>
+                <p style="color:#94a3b8; font-size:15px; margin-top:20px">${result.message}</p>
+                <button class="action-btn" onclick="restartQuiz()" style="width:100%; margin-top:30px">Пройти тест ще раз</button>
+            </div>
+        `;
+        updateHUD();
+    } else {
+        state = 'theory';
+        render();
+        updateHUD();
+    }
+}
 
     document.getElementById('music-toggle').addEventListener('click', () => {
         toggleMusic();
