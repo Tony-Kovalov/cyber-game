@@ -339,6 +339,13 @@
         src.stop(startAt + duration + 0.01);
     }
 
+    function stopMusic() {
+        if (musicTimer) {
+                clearTimeout(musicTimer);
+            musicTimer = null;
+        }
+    }
+
     function setMusicButtonLabel() {
         const btn = document.getElementById('music-toggle');
         btn.innerText = musicOn ? '🔊 Музика: ON' : '🔇 Музика: OFF';
@@ -379,6 +386,9 @@
         } else if (musicTimer) {
             clearTimeout(musicTimer);
             musicTimer = null;
+            if (audioCtx && audioCtx.state === 'running') {
+                audioCtx.suspend();
+            }
         }
     }
 
@@ -400,6 +410,23 @@
 
         document.addEventListener('pointerdown', unlock, { once: true });
         document.addEventListener('keydown', unlock, { once: true });
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                stopMusic();
+            } else if (musicOn) {
+            ensureAudio();
+            if (!musicTimer) musicStep();
+            }
+        });
+        window.addEventListener('pagehide', () => {
+            stopMusic();
+            if (audioCtx && audioCtx.state !== 'closed') {
+            audioCtx.suspend();
+            }
+        });
+        window.addEventListener('beforeunload', () => {
+            stopMusic();
+        });
     }
 
     function playCorrectSfx() {
