@@ -293,7 +293,7 @@ function ensureAudio() {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
         masterGain = audioCtx.createGain();
-        masterGain.gain.value = 0.24;
+        masterGain.gain.value = 0.36;
         masterGain.connect(audioCtx.destination);
     }
 
@@ -407,7 +407,7 @@ function hardResumeAudio() {
 
     try {
         masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
-        masterGain.gain.setValueAtTime(0.24, audioCtx.currentTime);
+        masterGain.gain.setValueAtTime(0.36, audioCtx.currentTime);
     } catch (_) {}
 
     if (!musicTimer) musicStep();
@@ -424,42 +424,36 @@ function toggleMusic() {
 
 function initMusicAutostart() {
     setMusicButtonLabel();
-
-    // Спроба старту одразу
-    try {
-        ensureAudio();
-        if (musicOn) hardResumeAudio();
-    } catch (_) {}
-
-    // Гарантований старт після першої взаємодії (autoplay policy)
-    const unlock = () => {
-        if (musicOn) hardResumeAudio();
-        document.removeEventListener('pointerdown', unlock);
-        document.removeEventListener('touchstart', unlock);
-        document.removeEventListener('keydown', unlock);
+    const unlockAudio = async () => {
+        try {
+            ensureAudio();
+            // Дуже короткий "порожній" звук, щоб iOS точно активував контекст
+            const osc = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            g.gain.value = 0.0001;
+            osc.connect(g).connect(masterGain);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.01);
+            await audioCtx.resume();
+            if (musicOn) hardResumeAudio();
+        } catch (_) {}
+        document.removeEventListener('touchstart', unlockAudio);
+        document.removeEventListener('pointerdown', unlockAudio);
+        document.removeEventListener('click', unlockAudio);
+        document.removeEventListener('keydown', unlockAudio);
     };
-
-    document.addEventListener('pointerdown', unlock, { once: true });
-    document.addEventListener('touchstart', unlock, { once: true, passive: true });
-    document.addEventListener('keydown', unlock, { once: true });
-
-    // Надійні хендлери для Telegram WebView / mobile browsers
+    // Для iPhone ключове — touchstart
+    document.addEventListener('touchstart', unlockAudio, { once: true, passive: true });
+    document.addEventListener('pointerdown', unlockAudio, { once: true });
+    document.addEventListener('click', unlockAudio, { once: true });
+    document.addEventListener('keydown', unlockAudio, { once: true });
     document.addEventListener('visibilitychange', () => {
         if (document.hidden) hardPauseAudio();
-        else hardResumeAudio();
+        else if (musicOn) hardResumeAudio();
     });
-
-    document.addEventListener('webkitvisibilitychange', () => {
-        if (document.webkitHidden) hardPauseAudio();
-        else hardResumeAudio();
-    });
-
-    window.addEventListener('blur', hardPauseAudio);
     window.addEventListener('pagehide', hardPauseAudio);
-    window.addEventListener('beforeunload', hardPauseAudio);
-
     window.addEventListener('pageshow', () => {
-        if (!document.hidden) hardResumeAudio();
+        if (!document.hidden && musicOn) hardResumeAudio();
     });
 }
 
