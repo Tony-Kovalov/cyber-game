@@ -14,6 +14,10 @@
             --text: #e2e8f0;
             --line-height: 1.8;
         }
+        <audio id="bgm" loop playsinline preload="auto">
+          <!-- ВСТАВ СВІЙ ФАЙЛ ТУТ -->
+          <source src="the_mountain-control-system-142290.mp3" type="audio/mpeg">
+        </audio>
 
         body {
             background-color: var(--bg);
@@ -282,68 +286,9 @@
     let score = 0;
     let state = 'theory';
 
-// ===== Аудіо (повна заміна секції) =====
-let audioCtx = null;
-let musicOn = true;
-let musicTimer = null;
-let masterGain = null;
-
-function ensureAudio() {
-    if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-        masterGain = audioCtx.createGain();
-        masterGain.gain.value = 0.36;
-        masterGain.connect(audioCtx.destination);
-    }
-
-    if (audioCtx.state === 'suspended') {
-        audioCtx.resume().catch(() => {});
-    }
-}
-
-function makeVoice(type, freq, startAt, duration, peakGain) {
-    if (!audioCtx || !masterGain) return;
-
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, startAt);
-
-    gain.gain.setValueAtTime(0.0001, startAt);
-    gain.gain.exponentialRampToValueAtTime(peakGain, startAt + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
-
-    osc.connect(gain).connect(masterGain);
-    osc.start(startAt);
-    osc.stop(startAt + duration + 0.02);
-}
-
-function makeNoise(startAt, duration, peakGain) {
-    if (!audioCtx || !masterGain) return;
-
-    const bufferSize = Math.floor(audioCtx.sampleRate * duration);
-    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.5;
-
-    const src = audioCtx.createBufferSource();
-    src.buffer = buffer;
-
-    const hp = audioCtx.createBiquadFilter();
-    hp.type = 'highpass';
-    hp.frequency.value = 1200;
-
-    const gain = audioCtx.createGain();
-    gain.gain.setValueAtTime(0.0001, startAt);
-    gain.gain.exponentialRampToValueAtTime(peakGain, startAt + 0.01);
-    gain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
-
-    src.connect(hp).connect(gain).connect(masterGain);
-    src.start(startAt);
-    src.stop(startAt + duration + 0.01);
-}
+// ===== Фонова музика через mp3 =====
+const bgm = document.getElementById('bgm');
+let musicOn = true; // за замовчуванням увімкнено
 
 function setMusicButtonLabel() {
     const btn = document.getElementById('music-toggle');
@@ -351,112 +296,55 @@ function setMusicButtonLabel() {
     btn.innerText = musicOn ? '🔊 Музика: ON' : '🔇 Музика: OFF';
 }
 
-function musicStep() {
-    if (!musicOn || !audioCtx || !masterGain) return;
-
-    const t = audioCtx.currentTime + 0.02;
-    const stepDur = 0.25;
-    const cycle = 16 * stepDur;
-
-    // Арпеджіо
-    const arp = [261.63, 329.63, 392.00, 329.63, 293.66, 369.99, 440.00, 369.99];
-    for (let i = 0; i < 16; i++) {
-        const n = arp[i % arp.length];
-        makeVoice('triangle', n, t + i * stepDur, 0.20, 0.015);
-        if (i % 2 === 0) makeVoice('sine', n * 2, t + i * stepDur + 0.01, 0.12, 0.006);
-    }
-
-    // Бас
-    const bass = [130.81, 146.83, 98.00, 110.00];
-    for (let i = 0; i < 4; i++) {
-        makeVoice('sawtooth', bass[i], t + i * 1.0, 0.60, 0.010);
-    }
-
-    // Пад
-    makeVoice('sine', 196.00, t, cycle - 0.05, 0.004);
-
-    musicTimer = setTimeout(musicStep, cycle * 1000);
+function startMusic() {
+    if (!musicOn || !bgm) return;
+    bgm.volume = 0.45; // підкрути 0.3..0.8 за потреби
+    bgm.play().catch(() => {});
 }
 
-function hardPauseAudio() {
-    // 1) зупиняємо цикл
-    if (musicTimer) {
-        clearTimeout(musicTimer);
-        musicTimer = null;
-    }
-
-    // 2) глушимо мастер-канал
-    if (audioCtx && masterGain) {
-        try {
-            masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
-            masterGain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
-        } catch (_) {}
-    }
-
-    // 3) suspend контекст
-    if (audioCtx && audioCtx.state === 'running') {
-        audioCtx.suspend().catch(() => {});
-    }
-}
-
-function hardResumeAudio() {
-    if (!musicOn) return;
-
-    ensureAudio();
-    if (!audioCtx || !masterGain) return;
-
-    try {
-        masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
-        masterGain.gain.setValueAtTime(0.36, audioCtx.currentTime);
-    } catch (_) {}
-
-    if (!musicTimer) musicStep();
+function stopMusic() {
+    if (!bgm) return;
+    bgm.pause();
 }
 
 function toggleMusic() {
-    ensureAudio();
     musicOn = !musicOn;
     setMusicButtonLabel();
-
-    if (musicOn) hardResumeAudio();
-    else hardPauseAudio();
+    if (musicOn) startMusic();
+    else stopMusic();
 }
 
 function initMusicAutostart() {
     setMusicButtonLabel();
-    const unlockAudio = async () => {
-        try {
-            ensureAudio();
-            // Дуже короткий "порожній" звук, щоб iOS точно активував контекст
-            const osc = audioCtx.createOscillator();
-            const g = audioCtx.createGain();
-            g.gain.value = 0.0001;
-            osc.connect(g).connect(masterGain);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.01);
-            await audioCtx.resume();
-            if (musicOn) hardResumeAudio();
-        } catch (_) {}
-        document.removeEventListener('touchstart', unlockAudio);
-        document.removeEventListener('pointerdown', unlockAudio);
-        document.removeEventListener('click', unlockAudio);
-        document.removeEventListener('keydown', unlockAudio);
+
+    // iPhone/Telegram: запуск після першого тачу
+    const unlock = () => {
+        startMusic();
+        document.removeEventListener('touchstart', unlock);
+        document.removeEventListener('pointerdown', unlock);
+        document.removeEventListener('click', unlock);
+        document.removeEventListener('keydown', unlock);
     };
-    // Для iPhone ключове — touchstart
-    document.addEventListener('touchstart', unlockAudio, { once: true, passive: true });
-    document.addEventListener('pointerdown', unlockAudio, { once: true });
-    document.addEventListener('click', unlockAudio, { once: true });
-    document.addEventListener('keydown', unlockAudio, { once: true });
+
+    document.addEventListener('touchstart', unlock, { once: true, passive: true });
+    document.addEventListener('pointerdown', unlock, { once: true });
+    document.addEventListener('click', unlock, { once: true });
+    document.addEventListener('keydown', unlock, { once: true });
+
+    // коли сторінка йде у фон — ставимо паузу
     document.addEventListener('visibilitychange', () => {
-        if (document.hidden) hardPauseAudio();
-        else if (musicOn) hardResumeAudio();
+        if (document.hidden) stopMusic();
+        else if (musicOn) startMusic();
     });
-    window.addEventListener('pagehide', hardPauseAudio);
+
+    window.addEventListener('pagehide', stopMusic);
+    window.addEventListener('beforeunload', stopMusic);
+    window.addEventListener('blur', stopMusic);
+
     window.addEventListener('pageshow', () => {
-        if (!document.hidden && musicOn) hardResumeAudio();
+        if (!document.hidden && musicOn) startMusic();
     });
 }
-
 // SFX
 function playCorrectSfx() {
     if (!audioCtx) return;
@@ -788,10 +676,7 @@ function playFinishJingle() {
     }
 }
 
-    document.getElementById('music-toggle').addEventListener('click', () => {
-        toggleMusic();
-    });
-
+    document.getElementById('music-toggle').addEventListener('click', toggleMusic);
     initMusicAutostart();
     updateHUD();
     render();
