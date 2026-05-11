@@ -282,178 +282,213 @@
     let score = 0;
     let state = 'theory';
 
-    // ===== Аудіо =====
-    let audioCtx = null;
-    let musicOn = true;
-    let musicTimer = null;
-    let masterGain = null;
+// ===== Аудіо (повна заміна секції) =====
+let audioCtx = null;
+let musicOn = true;
+let musicTimer = null;
+let masterGain = null;
 
-    function ensureAudio() {
-        if (!audioCtx) {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            masterGain = audioCtx.createGain();
-            masterGain.gain.value = 0.24;
-            masterGain.connect(audioCtx.destination);
-        }
-        if (audioCtx.state === 'suspended') {
-            audioCtx.resume();
-        }
+function ensureAudio() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        masterGain = audioCtx.createGain();
+        masterGain.gain.value = 0.24;
+        masterGain.connect(audioCtx.destination);
     }
 
-    function makeVoice(type, freq, startAt, duration, peakGain) {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+    }
+}
 
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, startAt);
+function makeVoice(type, freq, startAt, duration, peakGain) {
+    if (!audioCtx || !masterGain) return;
 
-        gain.gain.setValueAtTime(0.0001, startAt);
-        gain.gain.exponentialRampToValueAtTime(peakGain, startAt + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
 
-        osc.connect(gain).connect(masterGain);
-        osc.start(startAt);
-        osc.stop(startAt + duration + 0.02);
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, startAt);
+
+    gain.gain.setValueAtTime(0.0001, startAt);
+    gain.gain.exponentialRampToValueAtTime(peakGain, startAt + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
+
+    osc.connect(gain).connect(masterGain);
+    osc.start(startAt);
+    osc.stop(startAt + duration + 0.02);
+}
+
+function makeNoise(startAt, duration, peakGain) {
+    if (!audioCtx || !masterGain) return;
+
+    const bufferSize = Math.floor(audioCtx.sampleRate * duration);
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.5;
+
+    const src = audioCtx.createBufferSource();
+    src.buffer = buffer;
+
+    const hp = audioCtx.createBiquadFilter();
+    hp.type = 'highpass';
+    hp.frequency.value = 1200;
+
+    const gain = audioCtx.createGain();
+    gain.gain.setValueAtTime(0.0001, startAt);
+    gain.gain.exponentialRampToValueAtTime(peakGain, startAt + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
+
+    src.connect(hp).connect(gain).connect(masterGain);
+    src.start(startAt);
+    src.stop(startAt + duration + 0.01);
+}
+
+function setMusicButtonLabel() {
+    const btn = document.getElementById('music-toggle');
+    if (!btn) return;
+    btn.innerText = musicOn ? '🔊 Музика: ON' : '🔇 Музика: OFF';
+}
+
+function musicStep() {
+    if (!musicOn || !audioCtx || !masterGain) return;
+
+    const t = audioCtx.currentTime + 0.02;
+    const stepDur = 0.25;
+    const cycle = 16 * stepDur;
+
+    // Арпеджіо
+    const arp = [261.63, 329.63, 392.00, 329.63, 293.66, 369.99, 440.00, 369.99];
+    for (let i = 0; i < 16; i++) {
+        const n = arp[i % arp.length];
+        makeVoice('triangle', n, t + i * stepDur, 0.20, 0.015);
+        if (i % 2 === 0) makeVoice('sine', n * 2, t + i * stepDur + 0.01, 0.12, 0.006);
     }
 
-    function makeNoise(startAt, duration, peakGain) {
-        const bufferSize = Math.floor(audioCtx.sampleRate * duration);
-        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.5;
-
-        const src = audioCtx.createBufferSource();
-        src.buffer = buffer;
-
-        const hp = audioCtx.createBiquadFilter();
-        hp.type = 'highpass';
-        hp.frequency.value = 1200;
-
-        const gain = audioCtx.createGain();
-        gain.gain.setValueAtTime(0.0001, startAt);
-        gain.gain.exponentialRampToValueAtTime(peakGain, startAt + 0.01);
-        gain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
-
-        src.connect(hp).connect(gain).connect(masterGain);
-        src.start(startAt);
-        src.stop(startAt + duration + 0.01);
+    // Бас
+    const bass = [130.81, 146.83, 98.00, 110.00];
+    for (let i = 0; i < 4; i++) {
+        makeVoice('sawtooth', bass[i], t + i * 1.0, 0.60, 0.010);
     }
 
-    function stopMusic() {
-        if (musicTimer) {
-                clearTimeout(musicTimer);
-            musicTimer = null;
-        }
+    // Пад
+    makeVoice('sine', 196.00, t, cycle - 0.05, 0.004);
+
+    musicTimer = setTimeout(musicStep, cycle * 1000);
+}
+
+function hardPauseAudio() {
+    // 1) зупиняємо цикл
+    if (musicTimer) {
+        clearTimeout(musicTimer);
+        musicTimer = null;
     }
 
-    function setMusicButtonLabel() {
-        const btn = document.getElementById('music-toggle');
-        btn.innerText = musicOn ? '🔊 Музика: ON' : '🔇 Музика: OFF';
-    }
-
-    function musicStep() {
-        if (!musicOn || !audioCtx) return;
-
-        const t = audioCtx.currentTime + 0.02;
-        const stepDur = 0.25;
-        const cycle = 16 * stepDur;
-
-        const arp = [261.63, 329.63, 392.00, 329.63, 293.66, 369.99, 440.00, 369.99];
-        for (let i = 0; i < 16; i++) {
-            const n = arp[i % arp.length];
-            makeVoice('triangle', n, t + i * stepDur, 0.20, 0.015);
-            if (i % 2 === 0) makeVoice('sine', n * 2, t + i * stepDur + 0.01, 0.12, 0.006);
-        }
-
-        const bass = [130.81, 146.83, 98.00, 110.00];
-        for (let i = 0; i < 4; i++) {
-            makeVoice('sawtooth', bass[i], t + i * 1.0, 0.60, 0.010);
-        }
-
-        makeVoice('sine', 196.00, t, cycle - 0.05, 0.004);
-
-        musicTimer = setTimeout(musicStep, cycle * 1000);
-    }
-
-    function toggleMusic() {
-        ensureAudio();
-        musicOn = !musicOn;
-        setMusicButtonLabel();
-
-        if (musicOn) {
-            if (musicTimer) clearTimeout(musicTimer);
-            musicStep();
-        } else if (musicTimer) {
-            clearTimeout(musicTimer);
-            musicTimer = null;
-            if (audioCtx && audioCtx.state === 'running') {
-                audioCtx.suspend();
-            }
-        }
-    }
-
-    function initMusicAutostart() {
-        setMusicButtonLabel();
-
+    // 2) глушимо мастер-канал
+    if (audioCtx && masterGain) {
         try {
-            ensureAudio();
-            if (musicOn) musicStep();
+            masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
+            masterGain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
         } catch (_) {}
-
-        const unlock = () => {
-            if (!musicOn) return;
-            ensureAudio();
-            if (!musicTimer) musicStep();
-            document.removeEventListener('pointerdown', unlock);
-            document.removeEventListener('keydown', unlock);
-        };
-
-        document.addEventListener('pointerdown', unlock, { once: true });
-        document.addEventListener('keydown', unlock, { once: true });
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                stopMusic();
-            } else if (musicOn) {
-            ensureAudio();
-            if (!musicTimer) musicStep();
-            }
-        });
-        window.addEventListener('pagehide', () => {
-            stopMusic();
-            if (audioCtx && audioCtx.state !== 'closed') {
-            audioCtx.suspend();
-            }
-        });
-        window.addEventListener('beforeunload', () => {
-            stopMusic();
-        });
     }
 
-    function playCorrectSfx() {
-        if (!audioCtx) return;
-        const t = audioCtx.currentTime + 0.01;
-        makeVoice('square', 523.25, t, 0.14, 0.03);
-        makeVoice('square', 659.25, t + 0.12, 0.16, 0.03);
-        makeVoice('square', 783.99, t + 0.24, 0.22, 0.035);
-        makeNoise(t + 0.10, 0.10, 0.004);
+    // 3) suspend контекст
+    if (audioCtx && audioCtx.state === 'running') {
+        audioCtx.suspend().catch(() => {});
     }
+}
 
-    function playWrongSfx() {
-        if (!audioCtx) return;
-        const t = audioCtx.currentTime + 0.01;
-        makeVoice('sawtooth', 220.00, t, 0.16, 0.03);
-        makeVoice('sawtooth', 174.61, t + 0.12, 0.20, 0.03);
-        makeVoice('triangle', 130.81, t + 0.24, 0.26, 0.028);
-    }
+function hardResumeAudio() {
+    if (!musicOn) return;
 
-    function playFinishJingle() {
-        if (!audioCtx) return;
-        const t = audioCtx.currentTime + 0.02;
-        makeVoice('square', 392.00, t, 0.20, 0.03);
-        makeVoice('square', 523.25, t + 0.22, 0.22, 0.03);
-        makeVoice('square', 659.25, t + 0.48, 0.26, 0.032);
-        makeVoice('triangle', 783.99, t + 0.78, 0.35, 0.028);
-    }
+    ensureAudio();
+    if (!audioCtx || !masterGain) return;
+
+    try {
+        masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
+        masterGain.gain.setValueAtTime(0.24, audioCtx.currentTime);
+    } catch (_) {}
+
+    if (!musicTimer) musicStep();
+}
+
+function toggleMusic() {
+    ensureAudio();
+    musicOn = !musicOn;
+    setMusicButtonLabel();
+
+    if (musicOn) hardResumeAudio();
+    else hardPauseAudio();
+}
+
+function initMusicAutostart() {
+    setMusicButtonLabel();
+
+    // Спроба старту одразу
+    try {
+        ensureAudio();
+        if (musicOn) hardResumeAudio();
+    } catch (_) {}
+
+    // Гарантований старт після першої взаємодії (autoplay policy)
+    const unlock = () => {
+        if (musicOn) hardResumeAudio();
+        document.removeEventListener('pointerdown', unlock);
+        document.removeEventListener('touchstart', unlock);
+        document.removeEventListener('keydown', unlock);
+    };
+
+    document.addEventListener('pointerdown', unlock, { once: true });
+    document.addEventListener('touchstart', unlock, { once: true, passive: true });
+    document.addEventListener('keydown', unlock, { once: true });
+
+    // Надійні хендлери для Telegram WebView / mobile browsers
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) hardPauseAudio();
+        else hardResumeAudio();
+    });
+
+    document.addEventListener('webkitvisibilitychange', () => {
+        if (document.webkitHidden) hardPauseAudio();
+        else hardResumeAudio();
+    });
+
+    window.addEventListener('blur', hardPauseAudio);
+    window.addEventListener('pagehide', hardPauseAudio);
+    window.addEventListener('beforeunload', hardPauseAudio);
+
+    window.addEventListener('pageshow', () => {
+        if (!document.hidden) hardResumeAudio();
+    });
+}
+
+// SFX
+function playCorrectSfx() {
+    if (!audioCtx) return;
+    const t = audioCtx.currentTime + 0.01;
+    makeVoice('square', 523.25, t, 0.14, 0.03);
+    makeVoice('square', 659.25, t + 0.12, 0.16, 0.03);
+    makeVoice('square', 783.99, t + 0.24, 0.22, 0.035);
+    makeNoise(t + 0.10, 0.10, 0.004);
+}
+
+function playWrongSfx() {
+    if (!audioCtx) return;
+    const t = audioCtx.currentTime + 0.01;
+    makeVoice('sawtooth', 220.00, t, 0.16, 0.03);
+    makeVoice('sawtooth', 174.61, t + 0.12, 0.20, 0.03);
+    makeVoice('triangle', 130.81, t + 0.24, 0.26, 0.028);
+}
+
+function playFinishJingle() {
+    if (!audioCtx) return;
+    const t = audioCtx.currentTime + 0.02;
+    makeVoice('square', 392.00, t, 0.20, 0.03);
+    makeVoice('square', 523.25, t + 0.22, 0.22, 0.03);
+    makeVoice('square', 659.25, t + 0.48, 0.26, 0.032);
+    makeVoice('triangle', 783.99, t + 0.78, 0.35, 0.028);
+}
 
     function launchConfetti() {
         const colors = ['#00f2ff', '#7000ff', '#ff007b', '#22c55e', '#facc15', '#ffffff'];
